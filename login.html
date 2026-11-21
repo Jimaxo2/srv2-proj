@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="login-body">
+    <div class="login-box">
+        <div class="login-brand">UNISON</div>
+        <h2 class="login-heading">Login</h2>
+
+        <form id="login-form">
+            <label for="username-input">Username:</label>
+            <input type="text" id="username-input" name="empleado" required>
+
+            <button type="submit" id="login-button">Entrar</button>
+        </form>
+
+    </div>
+    <script src="/js/script.js"></script>
+    <script>
+        const formulario = document.querySelector("#login-form");
+        formulario.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            const empleado = document.querySelector("#username-input").value.trim();
+
+            validateUser(empleado);
+        });
+</script>
+</body>
+</html>

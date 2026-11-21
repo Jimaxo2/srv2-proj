@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/css/style.css">
+	<title>Componentes</title>
+</head>
+<body>
+	<header>
+		<h1>Componentes</h1>
+	</header>
+
+    <div class="contenido">
+		
+		<div class="Tabla">
+			<div class="Tabla-titulo">
+				<h2 id="inventario-titulo">Inventario</h2>
+			</div>
+
+			<div class="Tabla-contenido">
+			<table id="Inventario">
+				<thead>
+					<tr>
+						<th class="id-inventario">ID Inventario</th>
+						<th class="componente">Componente</th>
+						<th class="descripcion">Descripción</th>
+						<th class="cantidad">Cantidad</th>
+						<th class="ubicacion">Ubicación</th>
+						<th class="precio">Precio</th>
+					</tr>
+				</thead>
+				<tbody>
+				<!-- Filas de datos de prueba-->
+				<!--
+					<tr>
+						<td>1</td>
+						<td>Componente 1</td>
+						<td>Descripción 1</td>
+						<td>10</td>
+						<td>Ubicación 1</td>
+						<td>$100.00</td>
+					</tr>
+
+					<tr>
+						<td>2</td>
+						<td>Componente 2</td>
+						<td>Descripción 2</td>
+						<td>20</td>
+						<td>Ubicación 2</td>
+						<td>$200.00</td>
+					</tr>
+
+					<tr>
+						<td>3</td>
+						<td>Componente 3</td>
+						<td>Descripción 3</td>
+						<td>30</td>
+						<td>Ubicación 3</td>
+						<td>$300.00</td>
+					</tr>
+
+					<tr>
+						<td>4</td>
+						<td>Componente 4</td>
+						<td>Descripción 4</td>
+						<td>40</td>
+						<td>Ubicación 4</td>
+						<td>$400.00</td>
+					</tr>
+					
+					<tr>
+						<td>5</td>
+						<td>Componente 5</td>
+						<td>Descripción 5</td>
+						<td>50</td>
+						<td>Ubicación 5</td>
+						<td>$500.00</td>
+					</tr>
+
+					<tr>
+						<td>3</td>
+						<td>Componente 3</td>
+						<td>Descripción 3</td>
+						<td>30</td>
+						<td>Ubicación 3</td>
+						<td>$300.00</td>
+					</tr>
+
+					<tr>
+						<td>4</td>
+						<td>Componente 4</td>
+						<td>Descripción 4</td>
+						<td>40</td>
+						<td>Ubicación 4</td>
+						<td>$400.00</td>
+					</tr>
+					
+					<tr>
+						<td>5</td>
+						<td>Componente 5</td>
+						<td>Descripción 5</td>
+						<td>50</td>
+						<td>Ubicación 5</td>
+						<td>$500.00</td>
+					</tr>
+					-->
+				</tbody>
+			</table>
+			</div>
+		</div>
+        <div class="peticiones">
+
+			<div class="notificaciones-titulo">
+				<h2 id="notificaciones">Peticiones</h2>
+			</div>
+		
+		<div class="notificaciones" id="lista-peticiones">
+			<p>Cargando peticiones...</p>
+		</div>
+
+        </div>
+    </div>
+    <div class="formulario">
+        <h2>Agregar Componente</h2>
+        <form id="for-Inventario" onsubmit="agregarFila(event)">
+            <label for="componente">Componente:</label>
+            <input type="text" id="componente" name="componente" required>
+
+            <label for="descripcion">Descripción:</label>
+            <input type="text" id="descripcion" name="descripcion" required>
+
+            <label for="cantidad">Cantidad:</label>
+            <input type="number" id="cantidad" name="cantidad" required>
+
+            <label for="ubicacion">Ubicación:</label>
+            <input type="text" id="ubicacion" name="ubicacion" required>
+
+            <label for="precio">Precio:</label>
+            <input type="number" step="0.01" id="precio" name="precio" required>
+
+            <button type="submit">Agregar</button>
+            <p id="errorMsg" class="error"></p>
+        </form>
+    </div>
+	<!-- Modal de resultado NFC -->
+	<div id="modal-nfc" class="modal-fondo" onclick="cerrarModalNfc()">
+		<div id="modal-nfc-caja" class="modal-caja" role="dialog" aria-modal="true"
+			aria-labelledby="modal-nfc-titulo" onclick="event.stopPropagation()">
+			<h2 id="modal-nfc-titulo"></h2>
+			<div id="modal-nfc-cuerpo"></div>
+			<button type="button" class="modal-boton" onclick="cerrarModalNfc()">Cerrar</button>
+		</div>
+	</div>
+</body>
+<script src="/js/script.js"></script>
+<script>
+	function verificarEmpleado() {
+		const empleado = sessionStorage.getItem("empleado");
+
+		if (!empleado) {
+			window.location.href = "/login.html";
+		} else {
+			fillTable();
+		}
+	}
+
+	document.addEventListener("DOMContentLoaded", () => {
+		verificarEmpleado();
+
+		cargarPeticiones();
+		setInterval(cargarPeticiones, 5000);
+
+		consultarEventosNfc();
+		setInterval(consultarEventosNfc, 2000);
+	});
+</script>
+</html>
