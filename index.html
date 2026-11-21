@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="css/style.css">
 	<title>Componentes</title>
 </head>
 <body>
@@ -78,13 +78,13 @@
 		</div>
 	</div>
 
-	<script src="{{ url_for('static', filename='script.js') }}"></script>
+	<script src="js/script.js"></script>
 	<script>
 		function verificarEmpleado() {
 			const empleado = sessionStorage.getItem("empleado");
 
 			if (!empleado) {
-				window.location.href = "/login";
+				window.location.href = "/login.html";
 			} else {
 				fillTable();
 			}

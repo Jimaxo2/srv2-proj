@@ -26,7 +26,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BACKUP_PATH = os.path.join(
     BASE_DIR,
     "database_ct",
-    "respaldo_ct.sql"
+    "respaldo_ct",
+    "respaldo.sql"
 )
 
 
