@@ -134,11 +134,8 @@ thead th {
     padding: 12px 10px;
     border: 1px solid var(--unison-azul-claro);
     text-align: left;
-    /* === Cambios para que el texto del encabezado se vea completo === */
     white-space: normal;
-    /* Permite que el texto baje a la siguiente línea si no cabe */
     word-break: break-word;
-    /* Rompe las palabras largas de forma limpia para que no se salgan */
 }
 
 tbody td {
@@ -146,11 +143,8 @@ tbody td {
     padding: 10px;
     font-size: 0.92rem;
     color: var(--texto-principal);
-    /* === ¡Nuevas propiedades para el texto de las celdas! === */
     white-space: normal;
-    /* Permite múltiples líneas */
     word-break: break-word;
-    /* Rompe palabras largas correctamente para que bajen de línea */
 }
 
 tbody tr:nth-child(even) {
@@ -241,7 +235,6 @@ tbody tr:hover {
     border-top: 4px solid var(--unison-azul);
 }
 
-/* Ajuste lateral en pantallas grandes para alinear con .contenido */
 @media (min-width: 761px) {
     .formulario {
         margin: 0 20px;
@@ -263,25 +256,6 @@ tbody tr:hover {
     border-bottom: 2px solid var(--unison-dorado);
 }
 
-/*
-#for-Inventario {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 14px 20px;
-    align-items: end;
-}
-*/
-
-/* Agrupación visual de label + input sin tocar el HTML
-#for-Inventario label {
-    display: block;
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: var(--unison-azul-oscuro);
-    margin-bottom: -8px;
-}
-*/
-
 #for-Inventario input {
     width: 100%;
     padding: 10px 12px;
@@ -299,7 +273,6 @@ tbody tr:hover {
     box-shadow: 0 0 0 3px rgba(0, 59, 112, 0.15);
 }
 
-/* Botón con colores institucionales */
 #for-Inventario button {
     background-color: var(--unison-azul);
     color: var(--blanco);
@@ -323,7 +296,6 @@ tbody tr:hover {
     transform: scale(0.98);
 }
 
-/* Mensaje de error */
 .error {
     grid-column: 1 / -1;
     color: var(--error-rojo);
@@ -350,8 +322,6 @@ tbody tr:hover {
     }
 }
 
-
-
 /* =========================================
    Login Page Styles
    ========================================= */
@@ -366,10 +336,6 @@ tbody tr:hover {
     --muted: #5f6d7c;
     --border: rgba(0, 92, 168, 0.18);
     --shadow: 0 18px 40px rgba(6, 44, 90, 0.18);
-}
-
-* {
-    box-sizing: border-box;
 }
 
 body.login-body {
@@ -512,4 +478,281 @@ button#login-button:active {
     margin-top: 16px;
     padding: 8px 20px;
     cursor: pointer;
+}
+
+/* ========================================================
+   Insertar Usuario, Insertar componente, Surtir componente
+   ======================================================== */
+
+:root {
+    --insertar-azul-oscuro: #002B54;
+    --insertar-azul: #003B70;
+    --insertar-azul-claro: #005596;
+    --insertar-dorado: #F2A900;
+    --insertar-dorado-hover: #D99600;
+    --insertar-fondo: #F4F6F9;
+    --insertar-blanco: #FFFFFF;
+    --insertar-texto: #1E293B;
+    --insertar-borde: #CBD5E1;
+    --insertar-sombra: 0 18px 40px rgba(0, 43, 84, 0.16);
+}
+
+body.insertar-body,
+body.insertar-comp-body,
+body.body-surtir {
+    min-height: 100vh;
+    margin: 0;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 24px;
+    padding: 32px 16px;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: var(--insertar-texto);
+    background:
+        linear-gradient(rgba(0, 59, 112, 0.06), rgba(0, 59, 112, 0.06)),
+        var(--insertar-fondo);
+}
+
+.Titulo_insertar,
+.Formulario_insertar,
+.Titulo_insertar_componente,
+.Formulario_insertar_componente,
+.Titulo_surtir_componente,
+.Formulario_surtir_componente {
+    width: min(100%, 560px);
+}
+
+.Titulo_insertar,
+.Titulo_insertar_componente,
+.Titulo_surtir_componente {
+    border-bottom: 5px solid var(--insertar-dorado);
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--insertar-azul-oscuro), var(--insertar-azul));
+    box-shadow: 0 8px 20px rgba(0, 43, 84, 0.18);
+}
+
+.Titulo_insertar h1,
+.Titulo_insertar_componente h1,
+.Titulo_surtir_componente h1 {
+    margin: 0;
+    padding: 18px 24px;
+    color: var(--insertar-blanco);
+    font-size: clamp(24px, 5vw, 34px);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.Formulario_insertar,
+.Formulario_insertar_componente,
+.Formulario_surtir_componente {
+    box-sizing: border-box;
+    padding: 30px;
+    border: 1px solid var(--insertar-borde);
+    border-top: 5px solid var(--insertar-dorado);
+    border-radius: 10px;
+    background: var(--insertar-blanco);
+    box-shadow: var(--insertar-sombra);
+}
+
+.Formulario_insertar form,
+.Formulario_insertar_componente form,
+.Formulario_surtir_componente form {
+    display: grid;
+    gap: 0;
+}
+
+.Formulario_insertar label,
+.Formulario_insertar_componente label,
+.Formulario_surtir_componente label {
+    margin-bottom: 7px;
+    color: var(--insertar-azul-oscuro);
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.Formulario_insertar input,
+.Formulario_insertar_componente input,
+.Formulario_surtir_componente input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 18px;
+    border: 2px solid var(--insertar-borde);
+    border-radius: 6px;
+    background: var(--insertar-blanco);
+    color: var(--insertar-texto);
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.Formulario_insertar input:focus,
+.Formulario_insertar_componente input:focus,
+.Formulario_surtir_componente input:focus {
+    border-color: var(--insertar-azul-claro);
+    box-shadow: 0 0 0 3px rgba(0, 84, 150, 0.12);
+    background: #F8FAFC;
+}
+
+#btnInsertar,
+#btnInsertarComponente,
+#btnAgregarComp {
+    min-height: 48px;
+    margin-top: 4px;
+    border: 0;
+    border-bottom: 3px solid var(--insertar-dorado);
+    border-radius: 6px;
+    background: var(--insertar-azul);
+    color: var(--insertar-blanco);
+    font-size: 16px;
+    font-family: inherit;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+#btnAgregarComp {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+#btnInsertar:hover,
+#btnInsertarComponente:hover,
+#btnAgregarComp:hover {
+    background: var(--insertar-azul-claro);
+    border-bottom-color: var(--insertar-dorado-hover);
+    transform: translateY(-1px);
+}
+
+#btnInsertar:active,
+#btnInsertarComponente:active,
+#btnAgregarComp:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 480px) {
+    body.insertar-body,
+    body.insertar-comp-body {
+        padding: 20px 12px;
+    }
+
+    .Formulario_insertar,
+    .Formulario_insertar_componente {
+        padding: 22px 18px;
+    }
+
+    .Titulo_insertar h1,
+    .Titulo_insertar_componente h1 {
+        padding: 16px;
+        font-size: 24px;
+    }
+}
+
+.body-surtir {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+body.body-surtir {
+    align-items: stretch;
+}
+
+.Titulo_surtir_componente {
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+.Formulario_surtir_componente,
+.comp_añadidos {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+}
+
+.comp_añadidos {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 1.5rem;
+    border: 1px solid var(--insertar-borde);
+    border-top: 5px solid var(--insertar-dorado);
+    border-radius: 10px;
+    background: var(--insertar-blanco);
+    box-shadow: var(--insertar-sombra);
+}
+
+.comp_añadidos h2 {
+    margin: 0 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--insertar-dorado);
+    color: var(--insertar-azul-oscuro);
+}
+
+#lista_añadidos {
+    display: grid;
+    flex: 1 1 auto;
+    min-height: 0;
+    gap: 0.75rem;
+    margin: 0 0 1.25rem;
+    padding: 0;
+    list-style: none;
+    overflow-y: auto;
+}
+
+#lista_añadidos li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--insertar-borde);
+    border-left: 4px solid var(--insertar-azul);
+    border-radius: 6px;
+    background: #F8FAFC;
+    color: var(--insertar-texto);
+}
+
+.comp_añadidos button {
+    padding: 0.55rem 0.9rem;
+    border: 0;
+    border-bottom: 3px solid var(--insertar-dorado);
+    border-radius: 6px;
+    background: var(--insertar-azul);
+    color: var(--insertar-blanco);
+    font: 700 16px inherit;
+    cursor: pointer;
+}
+
+.comp_añadidos button:hover:not(:disabled) {
+    background: var(--insertar-azul-claro);
+}
+
+.comp_añadidos button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+#mensaje_peticion {
+    min-height: 1.5em;
+    margin: 0.75rem 0 0;
+}
+
+@media (max-width: 700px) {
+    .body-surtir {
+        grid-template-columns: 1fr;
+    }
+
+    .Titulo_surtir_componente {
+        grid-column: 1;
+    }
+}
+
+.comp_añadidos {
+    overflow-y: auto;
+    max-height: 400px;
 }

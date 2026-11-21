@@ -4,22 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="login-body">
     <div class="login-box">
         <div class="login-brand">UNISON</div>
         <h2 class="login-heading">Login</h2>
+        <form>
+            <label for="username" id="username-label">Username:</label>
+            <input type="text" id="username-input" name="username" required>
 
-        <form id="login-form">
-            <label for="username-input">Username:</label>
-            <input type="text" id="username-input" name="empleado" required>
+            <label for="password" id="password-label">Password:</label>
+            <input type="password" id="password-input" name="password" required>
 
             <button type="submit" id="login-button">Entrar</button>
         </form>
-
     </div>
-    <script src="/js/script.js"></script>
+    <script src="js/script.js"></script>
     <script>
         const formulario = document.querySelector("#login-form");
         formulario.addEventListener("submit", (event) => {
@@ -29,6 +30,6 @@
 
             validateUser(empleado);
         });
-</script>
+    </script>
 </body>
 </html>

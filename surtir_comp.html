@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surtir Componente</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="body-surtir">
+    <div class="Titulo_surtir_componente">
+        <h1>Surtir Componente</h1>
+    </div>
+    <div class="Formulario_surtir_componente">
+        <label for="id_comp">ID Componente:</label>
+        <input list="lista_componentes" id="id_comp" name="id_comp" required>
+        <label for="cantidad_comp">Cantidad:</label>
+        <input type="number" id="cantidad_comp" name="cantidad_comp" min="1" step="1" value="1" required>
+            
+        <datalist id="lista_componentes">
+                
+        </datalist><br><br>
+        <button id="btnAgregarComp">Agregar</button>
+    </div>
+    <div class="comp_añadidos">
+        <h2>Componentes añadidos</h2>
+        <ul id="lista_añadidos"></ul>
+        <button type="button" id="btnConfirmarPet" disabled>Confirmar petición</button>
+        <p id="mensaje_peticion" role="status" aria-live="polite"></p>
+    </div>
+</body>
+
+<script src="js/script.js"></script>
+
+</html>

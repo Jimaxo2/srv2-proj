@@ -1,0 +1,9 @@
+-----------------------------------
+Iniciando respaldo: Sat Nov 21 09:15:03 PM UTC 2026
+permission denied while trying to connect to the docker API at unix:///var/run/docker.sock
+ERROR: No se pudo generar el respaldo.
+-----------------------------------
+Iniciando respaldo: Sat Nov 21 09:20:23 PM UTC 2026
+mysqldump: [Warning] Using a password on the command line interface can be insecure.
+Respaldo generado correctamente: /home/silva/srv-proj-test/database_ct/respaldo_ct/respaldo_2026-11-21.sql.gz
+Proceso finalizado: Sat Nov 21 09:20:24 PM UTC 2026

@@ -94,7 +94,6 @@ def inicializar_base_datos():
 
         print("[INFO] Restaurando respaldo...")
 
-        # Configuracion del cliente MySQL
         entorno = os.environ.copy()
         entorno["MYSQL_PWD"] = DB_PASSWORD
 
@@ -150,8 +149,6 @@ def inicializar_base_datos():
 
         print(f"[ERROR] Inicializacion MySQL: {error}")
 
-        # Eliminar solamente la base recién creada
-        # si la restauración o validación falla.
         if creada:
             try:
                 if conexion is None or not conexion.is_connected():
@@ -174,19 +171,143 @@ def inicializar_base_datos():
         if conexion is not None and conexion.is_connected():
             conexion.close()
 
+
 def registrar_evento_nfc(tipo, **datos):
     global ultimo_id_evento
     with candado_nfc:
         ultimo_id_evento += 1
         eventos_nfc.append({"id": ultimo_id_evento, "tipo": tipo, **datos})
 
+
 @app.route("/")
 def home():
     return render_template("index.html")
 
+
 @app.route("/login")
 def login():
     return render_template("login.html")
+
+
+@app.route("/inventario_nombre", methods=['GET'])
+def getComponentsNombre():
+    conexion = connect()
+    cursor = conexion.cursor(dictionary=True)
+
+    try:
+        cursor.execute("""SELECT nombre FROM componentes ORDER BY nombre ASC""")
+        data = cursor.fetchall()
+        return jsonify(data), 200
+
+    except mysql.connector.Error as error:
+        return jsonify({"error": str(error)}), 500
+
+    finally:
+        cursor.close()
+        conexion.close()
+
+
+@app.route("/surtir")
+def surtir():
+    return render_template("surtir_comp.html")
+
+
+@app.route("/surtir_componentes", methods=["POST"])
+def surtir_componentes():
+    datos = request.get_json(silent=True) or {}
+    items = datos.get("componentes", [])
+
+    if not isinstance(items, list) or len(items) == 0:
+        return jsonify({"error": "No hay componentes para surtir"}), 400
+
+    totales_por_nombre = {}
+    for item in items:
+        nombre = str(item.get("nombre", "")).strip()
+        try:
+            cantidad = int(item.get("cantidad", 0))
+        except (ValueError, TypeError):
+            return jsonify({"error": f"Cantidad inválida para '{nombre}'"}), 400
+
+        if not nombre or cantidad <= 0:
+            return jsonify({"error": "Nombre o cantidad no válidos"}), 400
+
+        totales_por_nombre[nombre] = totales_por_nombre.get(nombre, 0) + cantidad
+
+    conexion = None
+    cursor = None
+
+    try:
+        conexion = connect()
+        cursor = conexion.cursor(dictionary=True)
+
+        actualizados = []
+
+        for nombre, cantidad_a_sumar in totales_por_nombre.items():
+            cursor.execute(
+                "SELECT id_componente FROM componentes WHERE nombre = %s",
+                (nombre,)
+            )
+            comp = cursor.fetchone()
+            if not comp:
+                conexion.rollback()
+                return jsonify({"error": f"El componente '{nombre}' no existe"}), 404
+
+            id_componente = comp["id_componente"]
+
+            cursor.execute(
+                """
+                SELECT id_inventario, cantidad
+                FROM inventario
+                WHERE id_componente = %s
+                ORDER BY id_inventario ASC
+                FOR UPDATE
+                """,
+                (id_componente,)
+            )
+            filas_inv = cursor.fetchall()
+
+            if filas_inv:
+                id_inv_objetivo = filas_inv[0]["id_inventario"]
+                cursor.execute(
+                    """
+                    UPDATE inventario
+                    SET cantidad = cantidad + %s
+                    WHERE id_inventario = %s
+                    """,
+                    (cantidad_a_sumar, id_inv_objetivo)
+                )
+            else:
+                cursor.execute(
+                    """
+                    INSERT INTO inventario (id_componente, cantidad, ubicacion, precio)
+                    VALUES (%s, %s, %s, %s)
+                    """,
+                    (id_componente, cantidad_a_sumar, "GENERAL", None)
+                )
+
+            actualizados.append({
+                "id_componente": id_componente,
+                "nombre": nombre,
+                "cantidad_sumada": cantidad_a_sumar
+            })
+
+        conexion.commit()
+        return jsonify({
+            "mensaje": "Inventario surtido correctamente",
+            "actualizados": actualizados
+        }), 200
+
+    except Exception as error:
+        if conexion:
+            conexion.rollback()
+        return jsonify({"error": "Error al surtir inventario", "detalle": str(error)}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion and conexion.is_connected():
+            conexion.close()
+
 
 @app.route("/inventario", methods=['GET'])
 def getComponents():
@@ -218,6 +339,7 @@ def getComponents():
     finally:
         cursor.close()
         conexion.close()
+
 
 @app.route("/empleado", methods=["GET"])
 def validateUser():
@@ -251,15 +373,16 @@ def validateUser():
         cursor.close()
         connection.close()
 
+
 @app.route('/pedir')
 def pedir():
     return render_template("cliente.html")
+
 
 @app.route("/api/solicitudes", methods=["POST"])
 def crearSolicitud():
     datos = request.get_json(silent=True)
 
-    # Validar que se haya recibido información
     if not datos:
         return jsonify({"error": "No se recibieron datos"}), 400
 
@@ -267,18 +390,14 @@ def crearSolicitud():
     componentes = datos.get("componentes", [])
     comentarios = datos.get("comentarios", "")
 
-    # Validar empleado
     if not isinstance(empleado, dict) or not empleado.get("id_empleado"):
         return jsonify({"error": "No se recibió un empleado válido"}), 400
 
-    # Validar componentes
     if not isinstance(componentes, list) or len(componentes) == 0:
         return jsonify({"error": "La solicitud no contiene componentes"}), 400
 
     try:
         id_empleado = int(empleado["id_empleado"])
-
-        # Validar cantidades e identificadores
         ids_inventario = set()
 
         for item in componentes:
@@ -307,7 +426,6 @@ def crearSolicitud():
         conexion = connect()
         cursor = conexion.cursor(dictionary=True)
 
-        # Comprobar que el empleado exista
         cursor.execute("""
             SELECT id_empleado
             FROM empleados
@@ -317,7 +435,6 @@ def crearSolicitud():
         if not cursor.fetchone():
             return jsonify({"error": "El empleado no existe"}), 404
 
-        # Comprobar que los componentes existan y tengan existencias
         for item in componentes:
             id_inventario = int(item["id_inventario"])
             cantidad = int(item["cantidad"])
@@ -340,7 +457,6 @@ def crearSolicitud():
                     "error": f"No hay suficientes existencias para el inventario {id_inventario}"
                 }), 400
 
-        # Crear el pedido
         cursor.execute("""
             INSERT INTO pedidos (id_empleado, comentarios)
             VALUES (%s, %s)
@@ -348,7 +464,6 @@ def crearSolicitud():
 
         id_pedido = cursor.lastrowid
 
-        # Guardar cada componente solicitado
         for item in componentes:
             id_inventario = int(item["id_inventario"])
             cantidad = int(item["cantidad"])
@@ -374,7 +489,6 @@ def crearSolicitud():
                 id_pedido
             ))
 
-        # Guardar todos los cambios
         conexion.commit()
 
         return jsonify({
@@ -399,6 +513,7 @@ def crearSolicitud():
 
         if conexion:
             conexion.close()
+
 
 @app.route("/api/peticiones", methods=["GET"])
 def obtenerPeticiones():
@@ -457,6 +572,7 @@ def obtenerPeticiones():
         cursor.close()
         conexion.close()
 
+
 @app.route("/api/nfc-eventos", methods=["GET"])
 def obtener_eventos_nfc():
     desde = request.args.get("desde", type=int)
@@ -464,13 +580,13 @@ def obtener_eventos_nfc():
     with candado_nfc:
         ultimo = ultimo_id_evento
 
-        # Primera consulta de una página: no mostrar eventos viejos
         if desde is None:
             return jsonify({"ultimo_id": ultimo, "eventos": []}), 200
 
         nuevos = [e for e in eventos_nfc if e["id"] > desde]
 
     return jsonify({"ultimo_id": ultimo, "eventos": nuevos}), 200
+
 
 @app.route('/api/retiro-nfc', methods=['POST'])
 def retiro_nfc():
@@ -487,7 +603,6 @@ def retiro_nfc():
         conexion = connect()
         cursor = conexion.cursor(dictionary=True)
 
-        # Buscar al empleado por su NFC ID
         cursor.execute("""
             SELECT id_empleado, nombre
             FROM empleados
@@ -500,7 +615,6 @@ def retiro_nfc():
             registrar_evento_nfc("nfc_no_registrado", nfc_id=nfc_id)
             return jsonify({"error": "NFC no registrado"}), 404
 
-        # Buscar y bloquear todos sus pedidos pendientes
         cursor.execute("""
             SELECT id_pedido
             FROM pedidos
@@ -525,7 +639,6 @@ def retiro_nfc():
         ids_pedidos = [p["id_pedido"] for p in pedidos]
         placeholders = ",".join(["%s"] * len(ids_pedidos))
 
-        # Componentes que se van a retirar (sumados por componente)
         cursor.execute(f"""
             SELECT c.id_componente, c.nombre, SUM(h.cantidad) AS cantidad
             FROM historial_pedidos h
@@ -545,7 +658,6 @@ def retiro_nfc():
             for fila in cursor.fetchall()
         ]
 
-        # Descontar del inventario (si falta algo, no se retira nada)
         faltantes = []
 
         for componente in componentes:
@@ -596,14 +708,12 @@ def retiro_nfc():
                 "faltantes": faltantes
             }), 409
 
-        # Cambiar todos los pedidos a retirado
         cursor.execute(f"""
             UPDATE pedidos
             SET estado = 'retirado'
             WHERE id_pedido IN ({placeholders})
         """, tuple(ids_pedidos))
 
-        # Marcar todos sus componentes como recibidos
         cursor.execute(f"""
             UPDATE historial_pedidos
             SET recibido = 1
@@ -612,7 +722,6 @@ def retiro_nfc():
 
         conexion.commit()
 
-        # Registrar el evento DESPUÉS del commit
         registrar_evento_nfc(
             "retiro_exitoso",
             nfc_id=nfc_id,
@@ -645,6 +754,7 @@ def retiro_nfc():
         if conexion:
             conexion.close()
 
+
 if not inicializar_base_datos():
     sys.exit(1)
 
@@ -653,4 +763,3 @@ if __name__ == "__main__":
         sys.exit(1)
 
     app.run(host='0.0.0.0', debug=True)
-
