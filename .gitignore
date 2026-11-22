@@ -1,3 +1,4 @@
 .env
 .venv/
 database_ct/respaldo_ct.sql
+database_ct/respaldo_ct/ejecuciones.log
